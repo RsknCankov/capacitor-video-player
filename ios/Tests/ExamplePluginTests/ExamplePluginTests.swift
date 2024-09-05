@@ -1,5 +1,5 @@
 import XCTest
-@testable import ExamplePlugin
+@testable import CapacitorVideoPlayerPlugin
 
 class ExampleTests: XCTestCase {
     func testEcho() {

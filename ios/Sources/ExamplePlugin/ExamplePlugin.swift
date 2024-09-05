@@ -5,9 +5,9 @@ import Capacitor
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitorjs.com/docs/plugins/ios
  */
-@objc(ExamplePlugin)
-public class ExamplePlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ExamplePlugin"
+@objc(CapacitorVideoPlayerPlugin)
+public class CapacitorVideoPlayerPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "CapacitorVideoPlayerPlugin"
     public let jsName = "Example"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)

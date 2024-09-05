@@ -7,22 +7,22 @@ let package = Package(
     products: [
         .library(
             name: "CapacitorVideoPlayer",
-            targets: ["ExamplePlugin"])
+            targets: ["CapacitorVideoPlayerPlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", branch: "main")
     ],
     targets: [
         .target(
-            name: "ExamplePlugin",
+            name: "CapacitorVideoPlayerPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
             ],
-            path: "ios/Sources/ExamplePlugin"),
+            path: "ios/Sources/CapacitorVideoPlayerPlugin"),
         .testTarget(
-            name: "ExamplePluginTests",
-            dependencies: ["ExamplePlugin"],
-            path: "ios/Tests/ExamplePluginTests")
+            name: "CapacitorVideoPlayerPluginTests",
+            dependencies: ["CapacitorVideoPlayerPlugin"],
+            path: "ios/Tests/CapacitorVideoPlayerPluginTests")
     ]
 )

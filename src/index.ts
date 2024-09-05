@@ -1,10 +1,10 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { ExamplePlugin } from './definitions';
+import type { CapacitorVideoPlayerPlugin } from './definitions';
 
-const Example = registerPlugin<ExamplePlugin>('Example', {
-  web: () => import('./web').then(m => new m.ExampleWeb()),
+const CapacitorVideoPlayer = registerPlugin<CapacitorVideoPlayerPlugin>('CapacitorVideoPlayer', {
+  web: () => import('./web').then(m => new m.CapacitorVideoPlayerWeb()),
 });
 
 export * from './definitions';
-export { Example };
+export { CapacitorVideoPlayer };
