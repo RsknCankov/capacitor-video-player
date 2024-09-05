@@ -1,0 +1,189 @@
+{
+  "api": {
+    "name": "CapacitorVideoPlayerPlugin",
+    "slug": "capacitorvideoplayerplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "initPlayer",
+        "signature": "() => Promise<capVideoPlayerResult>",
+        "parameters": [],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "Initialize a video player",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "initplayer"
+      },
+      {
+        "name": "isPlaying",
+        "signature": "() => Promise<capVideoPlayerResult>",
+        "parameters": [],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "Return if a given playerId is playing",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "isplaying"
+      },
+      {
+        "name": "setVideoUrl",
+        "signature": "(options: { url: string; }) => Promise<capVideoPlayerResult>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ url: string; }"
+          }
+        ],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "Play the current video from a given playerId",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "setvideourl"
+      },
+      {
+        "name": "playerPlay",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "playerplay"
+      },
+      {
+        "name": "playerPause",
+        "signature": "() => Promise<capVideoPlayerResult>",
+        "parameters": [],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "Pause the current video from a given playerId",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "playerpause"
+      },
+      {
+        "name": "playerStop",
+        "signature": "() => Promise<capVideoPlayerResult>",
+        "parameters": [],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "playerstop"
+      },
+      {
+        "name": "exitPlayer",
+        "signature": "() => Promise<capVideoPlayerResult>",
+        "parameters": [],
+        "returns": "Promise<capVideoPlayerResult>",
+        "tags": [],
+        "docs": "Exit player",
+        "complexTypes": [
+          "capVideoPlayerResult"
+        ],
+        "slug": "exitplayer"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "The name of the event to listen for.",
+            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "The function to call when the event is triggered.",
+            "type": "(event: any) => void"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "eventName The name of the event to listen for."
+          },
+          {
+            "name": "param",
+            "text": "listenerFunc The function to call when the event is triggered."
+          }
+        ],
+        "docs": "Add event listeners for player events.",
+        "complexTypes": [
+          "PluginListenerHandle"
+        ],
+        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend-"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "capVideoPlayerResult",
+      "slug": "capvideoplayerresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "result",
+          "tags": [],
+          "docs": "result set to true when successful else false",
+          "complexTypes": [],
+          "type": "boolean | undefined"
+        },
+        {
+          "name": "method",
+          "tags": [],
+          "docs": "method name",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "value",
+          "tags": [],
+          "docs": "value returned",
+          "complexTypes": [],
+          "type": "any"
+        },
+        {
+          "name": "message",
+          "tags": [],
+          "docs": "message string",
+          "complexTypes": [],
+          "type": "string | undefined"
+        }
+      ]
+    },
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => Promise<void>"
+        }
+      ]
+    }
+  ],
+  "enums": [],
+  "typeAliases": [],
+  "pluginConfigs": []
+}
