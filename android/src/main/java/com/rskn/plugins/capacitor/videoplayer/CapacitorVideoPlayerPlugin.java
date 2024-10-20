@@ -140,7 +140,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     }
 
     @PluginMethod
-    public void stop(final PluginCall call) {
+    public void playerStop(final PluginCall call) {
         bridge
                 .getActivity()
                 .runOnUiThread(
