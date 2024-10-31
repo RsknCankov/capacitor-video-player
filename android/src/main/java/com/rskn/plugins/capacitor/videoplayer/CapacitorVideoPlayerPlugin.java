@@ -132,6 +132,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
 
                                 bridge.saveCall(call);
 
+                                call.resolve();
                             } else {
                                 call.reject("video player already started");
                             }
