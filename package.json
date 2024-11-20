@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Capacitor plugin for video playing",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -76,5 +76,8 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "capacitor-android-boot-broadcast-receiver": "file:../capacitor-android-boot-broadcast-receiver"
   }
 }

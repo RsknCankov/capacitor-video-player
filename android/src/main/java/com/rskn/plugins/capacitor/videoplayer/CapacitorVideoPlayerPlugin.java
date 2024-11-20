@@ -154,7 +154,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 FragmentManager fragmentManager = getBridge().getActivity().getSupportFragmentManager();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                 fragmentTransaction.remove(exoActivity);
-                                fragmentTransaction.commit();
+                                fragmentTransaction.commitAllowingStateLoss();
                                 exoActivity = null;
 
                                 call.resolve();
