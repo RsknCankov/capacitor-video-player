@@ -2,6 +2,7 @@ package com.rskn.plugins.capacitor.videoplayer;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.media3.common.util.UnstableApi;
 
 import android.app.UiModeManager;
 import android.content.Context;
@@ -21,7 +22,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "CapacitorVideoPlayer")
+@UnstableApi @CapacitorPlugin(name = "CapacitorVideoPlayer")
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
     private final JSObject ret = new JSObject();

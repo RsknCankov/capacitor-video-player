@@ -10,8 +10,9 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.util.UnstableApi;
 
-public class CapacitorExoActivity extends Fragment {
+@UnstableApi public class CapacitorExoActivity extends Fragment {
 
     private static final String TAG = "CapacitorExoActivity";
 
