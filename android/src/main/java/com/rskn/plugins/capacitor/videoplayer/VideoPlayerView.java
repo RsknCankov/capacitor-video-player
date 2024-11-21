@@ -122,6 +122,7 @@ import androidx.media3.ui.SubtitleView;
             exoPlayer.setMediaItem(mediaItem);
             // Prepare and start the player
             exoPlayer.prepare();
+            exoPlayer.play();
         }
     }
 
