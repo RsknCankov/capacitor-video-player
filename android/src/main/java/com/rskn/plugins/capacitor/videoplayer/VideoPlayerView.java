@@ -120,9 +120,8 @@ import androidx.media3.ui.SubtitleView;
             exoPlayer.clearMediaItems();
             MediaItem mediaItem = MediaItem.fromUri(url);
             exoPlayer.setMediaItem(mediaItem);
-            // Prepare and start the player
+            // Prepare the player
             exoPlayer.prepare();
-            exoPlayer.play();
         }
     }
 
