@@ -237,7 +237,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             @Override
             public void run() {
                 JSObject data = new JSObject();
-                data.put("errors", getInfo().get(PlayerEventTypes.ERROR.name()));
+                data.put("error", getInfo().get(PlayerEventTypes.ERROR.name()));
                 notifyListeners("CapVideoPlayerError", data);
             }
         });

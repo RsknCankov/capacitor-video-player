@@ -1,5 +1,7 @@
 package com.rskn.plugins.capacitor.videoplayer;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,10 +49,10 @@ public class PlayerEventsDispatcher {
 
     public synchronized void postNotification(String notificationName, Map<String, Object> _info) {
         ArrayList<PlayerEventRunnable> list = registeredObjects.get(notificationName);
+        Log.d("PlayerEventsDispatcher", "Posting notification for " + notificationName);
         if (list != null) {
             for (PlayerEventRunnable r : new ArrayList<>(list)) {
-                r.setInfo(_info);
-                r.run();
+                r.run(_info);
             }
         }
     }

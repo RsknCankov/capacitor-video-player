@@ -14,13 +14,19 @@ import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.ui.SubtitleView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@UnstableApi public class ExoPlayerListener implements Player.Listener {
+@UnstableApi
+public class ExoPlayerListener implements Player.Listener {
 
     private final SubtitleView subtitleView;
 
@@ -58,7 +64,7 @@ import java.util.Map;
         HashMap<String, Object> info = new HashMap(1);
         info.put(PlayerEventTypes.IS_PLAYING.name(), isPlaying);
         PlayerEventsDispatcher.defaultCenter().postNotification(
-                PlayerEventTypes.IS_PLAYING.name(),info
+                PlayerEventTypes.IS_PLAYING.name(), info
         );
     }
 
@@ -92,24 +98,24 @@ import java.util.Map;
 
     @Override
     public void onPlayerError(@NonNull PlaybackException error) {
-        ExoPlaybackException parsedError = (ExoPlaybackException) error;
         Player.Listener.super.onPlayerError(error);
         @Nullable Throwable cause = error.getCause();
-        HashMap<String, Object> info = new HashMap(1);
-        info.put("error", cause);
+
+        // Create a JSON-friendly object for the error details
+        JSONObject errorInfo = new JSONObject();
+        try {
+            errorInfo.put("error_message", error.getMessage());
+            if (cause != null) {
+                errorInfo.put("error_cause", cause.getMessage());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Convert JSONObject to a Map
+        Map<String, Object> info = new HashMap<>();
+        info.put(PlayerEventTypes.ERROR.name(), errorInfo);
+
         PlayerEventsDispatcher.defaultCenter().postNotification(PlayerEventTypes.ERROR.name(), info);
-//        if (cause instanceof HttpDataSource.HttpDataSourceException) {
-//            // An HTTP error occurred.
-//            HttpDataSource.HttpDataSourceException httpError = (HttpDataSource.HttpDataSourceException) cause;
-//            // It's possible to find out more about the error both by casting and by querying
-//            // the cause.
-//            if (httpError instanceof HttpDataSource.InvalidResponseCodeException) {
-//                // Cast to InvalidResponseCodeException and retrieve the response code, message
-//                // and headers.
-//            } else {
-//                // Try calling httpError.getCause() to retrieve the underlying cause, although
-//                // note that it may be null.
-//            }
-//        }
     }
 }
