@@ -168,6 +168,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     @PluginMethod
     public void removeAllListeners(final PluginCall call) {
         PlayerEventsDispatcher.defaultCenter().removeAllNotifications();
+        PlayerEventsDispatcher.defaultCenter().removeAllMethodsForNotification();
         call.resolve();
     }
 
