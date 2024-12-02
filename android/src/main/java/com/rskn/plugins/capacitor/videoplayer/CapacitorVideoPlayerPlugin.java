@@ -165,6 +165,12 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 );
     }
 
+    @PluginMethod
+    public void removeAllListeners(final PluginCall call) {
+        PlayerEventsDispatcher.defaultCenter().removeAllNotifications();
+        call.resolve();
+    }
+
     public boolean isDeviceTV(Context context) {
         //Since Android TV is only API 21+ that is the only time we will compare configurations
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -197,14 +203,16 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             }
         });
 
-        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.READY.name(), new PlayerEventRunnable() {
+        PlayerEventRunnable playerReadyRunnable = new PlayerEventRunnable() {
             @Override
             public void run() {
                 JSObject data = new JSObject();
                 data.put("ready", "true");
                 notifyListeners("CapVideoPlayerReady", data);
             }
-        });
+        };
+
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.READY.name(), playerReadyRunnable);
 
         PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.BUFFERING.name(), new PlayerEventRunnable() {
             @Override

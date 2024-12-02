@@ -37,6 +37,10 @@ public class PlayerEventsDispatcher {
         }
     }
 
+    public synchronized void removeAllMethodsForNotification() {
+        registeredObjects.clear();
+    }
+
     public synchronized void removeAllNotifications() {
         for (Iterator<Map.Entry<String, ArrayList<PlayerEventRunnable>>> entry = registeredObjects.entrySet().iterator(); entry.hasNext(); ) {
             Map.Entry<String, ArrayList<PlayerEventRunnable>> e = entry.next();

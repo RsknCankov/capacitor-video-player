@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.SubtitleView;
 
@@ -152,7 +153,7 @@ import androidx.media3.ui.SubtitleView;
     }
 
     private void initializePlayer(Surface surface) {
-        exoPlayer = new ExoPlayer.Builder(getContext()).build();
+        exoPlayer = new ExoPlayer.Builder(getContext()).setRenderersFactory(new DefaultRenderersFactory(getContext()).setEnableDecoderFallback(true)).build();
         // Set the Surface for video output
         exoPlayer.setVideoSurface(surface);
         if (playingUrl != null && !playingUrl.isEmpty()) {

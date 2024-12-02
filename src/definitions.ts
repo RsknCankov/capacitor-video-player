@@ -56,6 +56,8 @@ export interface CapacitorVideoPlayerPlugin {
       | 'CapVideoPlayerEnd',
     listenerFunc: (event: any) => void,
   ): Promise<PluginListenerHandle>;
+
+  removeAllListeners(): Promise<void>;
 }
 
 export interface capEchoOptions {
