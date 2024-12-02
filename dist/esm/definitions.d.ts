@@ -40,6 +40,7 @@ export interface CapacitorVideoPlayerPlugin {
      * @param listenerFunc The function to call when the event is triggered.
      */
     addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', listenerFunc: (event: any) => void): Promise<PluginListenerHandle>;
+    removeAllListeners(): Promise<void>;
 }
 export interface capEchoOptions {
     /**

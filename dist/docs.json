@@ -124,6 +124,16 @@
           "PluginListenerHandle"
         ],
         "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend-"
+      },
+      {
+        "name": "removeAllListeners",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "removealllisteners"
       }
     ],
     "properties": []

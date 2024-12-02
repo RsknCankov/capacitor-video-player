@@ -21,6 +21,7 @@ npx cap sync
 * [`playerStop()`](#playerstop)
 * [`exitPlayer()`](#exitplayer)
 * [`addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', ...)`](#addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend-)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -131,6 +132,15 @@ Add event listeners for player events.
 | **`listenerFunc`** | <code>(event: any) =&gt; void</code>                                                                                                                               | The function to call when the event is triggered. |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => Promise<void>
+```
 
 --------------------
 
