@@ -1,6 +1,6 @@
 # capacitor-video-player
 
-Capacitor plugin for video playing
+Capacitor plugin for video playing, backed up by FFMPEG for audio decoding of unsupported formats.
 
 ## Install
 

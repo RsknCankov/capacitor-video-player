@@ -14,13 +14,11 @@ import androidx.media3.common.TrackSelectionParameters;
 import androidx.media3.common.Tracks;
 import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.datasource.HttpDataSource;
-import androidx.media3.exoplayer.ExoPlaybackException;
+import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.SubtitleView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +27,11 @@ import java.util.Map;
 public class ExoPlayerListener implements Player.Listener {
 
     private final SubtitleView subtitleView;
+    private final ExoPlayer playerInstance;
 
-    public @OptIn(markerClass = UnstableApi.class) ExoPlayerListener(SubtitleView subtitleView) {
+    public @OptIn(markerClass = UnstableApi.class) ExoPlayerListener(SubtitleView subtitleView, ExoPlayer exoPlayer) {
         this.subtitleView = subtitleView;
+        this.playerInstance = exoPlayer;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ExoPlayerListener implements Player.Listener {
     @Override
     public void onIsPlayingChanged(boolean isPlaying) {
         Player.Listener.super.onIsPlayingChanged(isPlaying);
-        HashMap<String, Object> info = new HashMap(1);
+        HashMap<String, Object> info = new HashMap<>(1);
         info.put(PlayerEventTypes.IS_PLAYING.name(), isPlaying);
         PlayerEventsDispatcher.defaultCenter().postNotification(
                 PlayerEventTypes.IS_PLAYING.name(), info
@@ -98,7 +98,6 @@ public class ExoPlayerListener implements Player.Listener {
 
     @Override
     public void onPlayerError(@NonNull PlaybackException error) {
-        Player.Listener.super.onPlayerError(error);
         @Nullable Throwable cause = error.getCause();
 
         // Create a JSON-friendly object for the error details
@@ -115,7 +114,10 @@ public class ExoPlayerListener implements Player.Listener {
         // Convert JSONObject to a Map
         Map<String, Object> info = new HashMap<>();
         info.put(PlayerEventTypes.ERROR.name(), errorInfo);
-
         PlayerEventsDispatcher.defaultCenter().postNotification(PlayerEventTypes.ERROR.name(), info);
+        playerInstance.stop();
+        playerInstance.release();
+        playerInstance.clearMediaItems();
+        playerInstance.seekTo(0);
     }
 }
