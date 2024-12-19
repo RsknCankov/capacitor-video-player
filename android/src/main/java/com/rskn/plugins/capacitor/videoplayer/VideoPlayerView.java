@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -34,17 +33,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @UnstableApi
-class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener {
+class VideoPlayerView extends RelativeLayout implements TextureView.SurfaceTextureListener {
 
     private final String TAG = "VideoPlayerView";
 
-    CustomSurfaceView mSurfaceView;
-    CustomTextureView mTextureView;
-    SurfaceHolder mHolder;
+    TextureView mTextureView;
     SurfaceTexture mSurface;
     private ExoPlayer exoPlayer;
-    private final SubtitleView subtitleView;
     private String playingUrl;
+    private final SubtitleView subtitleView;
     private final AtomicBoolean isFFprobeRunning = new AtomicBoolean(false);
     private final AtomicBoolean isCancelled = new AtomicBoolean(false);
     private Thread ffprobeAnalyzeThread;
@@ -57,9 +54,15 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
     VideoPlayerView(Context context, boolean enableOpacity) {
         super(context);
         Log.println(Log.INFO, TAG, "Preview NOT Opacity");
+        mTextureView = new TextureView(context);
+        addView(mTextureView);
+        mTextureView.setSurfaceTextureListener(this);
 
-        // Initialize SurfaceView
-        mSurfaceView = new CustomSurfaceView(context);
+        if (mTextureView.isAvailable()) {
+            mSurface = mTextureView.getSurfaceTexture();
+            assert mSurface != null;
+            onSurfaceTextureAvailable(mSurface, mTextureView.getWidth(), mTextureView.getHeight());
+        }
 
         // Initialize and configure SubtitleView
         subtitleView = new SubtitleView(context);
@@ -71,14 +74,13 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
         subtitleView.setPadding(16, 16, 16, 16); // Padding for readability
         subtitleView.setApplyEmbeddedStyles(true); // Optional: apply styles embedded in the subtitles
 
-        addView(mSurfaceView);
         addView(subtitleView);
         requestLayout();
 
         // SurfaceHolder callback
-        mHolder = mSurfaceView.getHolder();
-        mHolder.addCallback(this);
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+//        mHolder = mTextureView.getHolder();
+//        mHolder.addCallback(this);
+//        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         Config.enableLogCallback(message -> {
             Log.d("FFmpeg", message.getText());
@@ -143,7 +145,6 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
     }
 
     public void setVideoUrl(String url) {
-        playerReset();
         this.playingUrl = url;
         // Prepare ExoPlayer
         if (exoPlayer != null) {
@@ -191,50 +192,30 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
         exoPlayer.pause();
     }
 
-    public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        // The Surface has been created, tell it where
-        // to draw.
-        try {
-            // prepare video player
-            Surface surfaceForVideo = holder.getSurface();
-            initializePlayer(surfaceForVideo);
-        } catch (Exception exception) {
-            Log.e(TAG, "Exception caused by setPreviewDisplay()", exception);
-        }
-    }
 
-    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        this.playerDestroy();
-    }
-
-
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int w, int h) {
-    }
-
+    @Override
     public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
-        // The Surface has been created, acquire the camera and tell it where
-        // to draw.
-        try {
-            mSurface = surface;
-
-        } catch (Exception exception) {
-            Log.e(TAG, "Exception caused by onSurfaceTextureAvailable()", exception);
-        }
+        mSurface = surface;
+        initializePlayer(mTextureView);
     }
 
+    @Override
     public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surface, int width, int height) {
+
     }
 
+    @Override
     public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surface) {
-        this.playerDestroy();
-        return true;
+        if (exoPlayer != null) {
+            playerDestroy();
+        }
+        return true; // Return true to release the SurfaceTexture.
     }
-
-
+    @Override
     public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {
     }
 
-    private void initializePlayer(Surface surface) {
+    private void initializePlayer(TextureView surface) {
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
                         2500,
@@ -249,7 +230,8 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
                 .setLoadControl(loadControl)
                 .build();
         // Set the Surface for video output
-        exoPlayer.setVideoSurface(surface);
+        Surface playerSurface = new Surface(surface.getSurfaceTexture());
+        exoPlayer.setVideoSurface(playerSurface);
         if (playingUrl != null && !playingUrl.isEmpty()) {
             MediaItem mediaItem = MediaItem.fromUri(playingUrl);
             exoPlayer.setMediaItem(mediaItem);
@@ -258,6 +240,7 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
             exoPlayer.play();
         }
         exoPlayer.addListener(new ExoPlayerListener(subtitleView, exoPlayer));
+
         TrackSelectionParameters trackSelectionParams = exoPlayer.getTrackSelectionParameters();
         TrackSelectionParameters updatedTrackSelectionParams = trackSelectionParams.buildUpon()
                 .setPreferredAudioLanguage("bg")
@@ -267,6 +250,7 @@ class VideoPlayerView extends RelativeLayout implements SurfaceHolder.Callback, 
                 .build();
         exoPlayer.setTrackSelectionParameters(updatedTrackSelectionParams);
         exoPlayer.setSeekParameters(SeekParameters.CLOSEST_SYNC);
+
     }
 
     private void cancelFFprobeIfRunning() {
