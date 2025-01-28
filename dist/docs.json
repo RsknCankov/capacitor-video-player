@@ -95,12 +95,12 @@
       },
       {
         "name": "addListener",
-        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
+        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
         "parameters": [
           {
             "name": "eventName",
             "docs": "The name of the event to listen for.",
-            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd'"
+            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams'"
           },
           {
             "name": "listenerFunc",
@@ -123,7 +123,7 @@
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend-"
+        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayersubtitlestreams-"
       },
       {
         "name": "removeAllListeners",

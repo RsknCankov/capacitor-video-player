@@ -20,7 +20,7 @@ npx cap sync
 * [`playerPause()`](#playerpause)
 * [`playerStop()`](#playerstop)
 * [`exitPlayer()`](#exitplayer)
-* [`addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', ...)`](#addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend-)
+* [`addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', ...)`](#addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayersubtitlestreams-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
@@ -118,18 +118,18 @@ Exit player
 --------------------
 
 
-### addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', ...)
+### addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', ...)
 
 ```typescript
-addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>
 ```
 
 Add event listeners for player events.
 
-| Param              | Type                                                                                                                                                               | Description                                       |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| **`eventName`**    | <code>'CapVideoPlayerBuffering' \| 'CapVideoPlayerIdle' \| 'CapVideoPlayerPlaying' \| 'CapVideoPlayerReady' \| 'CapVideoPlayerError' \| 'CapVideoPlayerEnd'</code> | The name of the event to listen for.              |
-| **`listenerFunc`** | <code>(event: any) =&gt; void</code>                                                                                                                               | The function to call when the event is triggered. |
+| Param              | Type                                                                                                                                                                                                  | Description                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **`eventName`**    | <code>'CapVideoPlayerBuffering' \| 'CapVideoPlayerIdle' \| 'CapVideoPlayerPlaying' \| 'CapVideoPlayerReady' \| 'CapVideoPlayerError' \| 'CapVideoPlayerEnd' \| 'CapVideoPlayerSubtitleStreams'</code> | The name of the event to listen for.              |
+| **`listenerFunc`** | <code>(event: any) =&gt; void</code>                                                                                                                                                                  | The function to call when the event is triggered. |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 

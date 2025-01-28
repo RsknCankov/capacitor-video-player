@@ -8,5 +8,6 @@ public enum PlayerEventTypes {
     END,
     ERROR,
     PAUSED,
-    STOPPED
+    STOPPED,
+    SUBTITLES_STREAMS
 }

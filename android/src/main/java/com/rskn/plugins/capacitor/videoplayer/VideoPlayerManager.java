@@ -62,6 +62,15 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         exoPlayer.pause();
     }
 
+    public void selectSubtitleStream(String language) {
+        if (exoPlayer != null) {
+            TrackSelectionParameters.Builder parametersBuilder = exoPlayer.getTrackSelectionParameters().buildUpon();
+            parametersBuilder.setPreferredTextLanguage(language);
+            exoPlayer.setTrackSelectionParameters(parametersBuilder.build());
+            Log.d(TAG, "Subtitle stream selected: " + language);
+        }
+    }
+
     private void initializePlayer(Context context, PlayerView playerView) {
         DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
                 .setBufferDurationsMs(

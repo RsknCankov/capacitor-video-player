@@ -53,7 +53,8 @@ export interface CapacitorVideoPlayerPlugin {
       | 'CapVideoPlayerPlaying'
       | 'CapVideoPlayerReady'
       | 'CapVideoPlayerError'
-      | 'CapVideoPlayerEnd',
+      | 'CapVideoPlayerEnd'
+      | 'CapVideoPlayerSubtitleStreams',
     listenerFunc: (event: any) => void,
   ): Promise<PluginListenerHandle>;
 

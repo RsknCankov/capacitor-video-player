@@ -20,7 +20,9 @@ import androidx.media3.exoplayer.ExoPlayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @UnstableApi
@@ -74,26 +76,27 @@ public class ExoPlayerListener implements Player.Listener {
         Player.Listener.super.onTracksChanged(tracks);
         Log.d(TAG, "Tracks changed. Total groups: " + tracks.getGroups().size());
 
+        List<String> subtitleStreams = new ArrayList<>(4);
         for (int i = 0; i < tracks.getGroups().size(); i++) {
             Tracks.Group trackGroup = tracks.getGroups().get(i);
-            Log.d(TAG, "Track Group Type: " + trackGroup.getType() + ", Group Index: " + i);
-
             if (trackGroup.getType() == C.TRACK_TYPE_TEXT) {
                 for (int j = 0; j < trackGroup.length; j++) {
-                    if (trackGroup.isTrackSupported(j) && trackGroup.isTrackSelected(j)) {
-                        Log.d(TAG, "Subtitle track selected: Language=" + trackGroup.getTrackFormat(j).language);
+                    if (trackGroup.isTrackSupported(j)) {
+                        Format format = trackGroup.getTrackFormat(j);
+                        if (format.sampleMimeType != null && format.sampleMimeType.startsWith("image/")) {
+                            subtitleStreams.add(format.language);
+                        } else {
+                            subtitleStreams.add(format.language);
+                        }
                     }
                 }
             }
+        }
 
-            for (int j = 0; j < trackGroup.length; j++) {
-                if (trackGroup.isTrackSupported(j)) {
-                    Format format = trackGroup.getTrackFormat(j);
-                    Log.d(TAG, "Supported track format: " + format.sampleMimeType +
-                            ", Bitrate: " + format.bitrate +
-                            ", Language: " + format.language);
-                }
-            }
+        if (!subtitleStreams.isEmpty()) {
+            Map<String, Object> info = new HashMap<>();
+            info.put("subtitle_streams", subtitleStreams);
+            PlayerEventsDispatcher.defaultCenter().postNotification(PlayerEventTypes.SUBTITLES_STREAMS.name(), info);
         }
     }
 

@@ -2,6 +2,7 @@ package com.rskn.plugins.capacitor.videoplayer;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.media3.common.util.UnstableApi;
 
 import android.app.UiModeManager;
 import android.content.Context;
@@ -21,7 +22,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "CapacitorVideoPlayer")
+@UnstableApi @CapacitorPlugin(name = "CapacitorVideoPlayer")
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
     private final JSObject ret = new JSObject();
@@ -54,6 +55,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             exoActivity.pausePlayer();
         });
 
+    }
+
+    @PluginMethod
+    public void selectSubtitleStream(PluginCall call) {
+        String language = call.getString("language");
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.selectSubtitleStream(language);
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
     }
 
     @PluginMethod
@@ -238,6 +252,15 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 JSObject data = new JSObject();
                 data.put("error", getInfo().get(PlayerEventTypes.ERROR.name()));
                 notifyListeners("CapVideoPlayerError", data);
+            }
+        });
+
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.SUBTITLES_STREAMS.name(), new PlayerEventRunnable() {
+            @Override
+            public void run() {
+                JSObject data = new JSObject();
+                data.put("subtitleStreams", getInfo().get("subtitle_streams"));
+                notifyListeners("CapVideoPlayerSubtitleStreams", data);
             }
         });
     }

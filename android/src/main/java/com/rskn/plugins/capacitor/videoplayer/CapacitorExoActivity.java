@@ -35,6 +35,10 @@ public class CapacitorExoActivity extends Fragment {
         return view;
     }
 
+    public void selectSubtitleStream(String language) {
+        videoPlayerView.selectSubtitleStream(language);
+    }
+
     public void setRect(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
