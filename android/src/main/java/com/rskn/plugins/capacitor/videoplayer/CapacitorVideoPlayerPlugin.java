@@ -63,10 +63,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         final Integer width = call.getInt("width", 0);
         final Integer height = call.getInt("height", 0);
         final Integer paddingBottom = call.getInt("paddingBottom", 0);
-//        final Boolean transparentView = call.getBoolean("toBack", false);
 
-        exoActivity = new CapacitorExoActivity();
-        exoActivity.transparentView = false;
 
         bridge
                 .getActivity()
@@ -110,6 +107,9 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 computedHeight =
                                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, size.y, metrics) - computedPaddingBottom;
                             }
+
+                            exoActivity = new CapacitorExoActivity();
+                            exoActivity.transparentView = false;
 
                             exoActivity.setRect(computedX, computedY, computedWidth, computedHeight);
 
@@ -156,7 +156,6 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 fragmentTransaction.remove(exoActivity);
                                 fragmentTransaction.commitAllowingStateLoss();
                                 exoActivity = null;
-
                                 call.resolve();
                             } else {
                                 call.reject("player already stopped");
@@ -170,15 +169,6 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         PlayerEventsDispatcher.defaultCenter().removeAllNotifications();
         PlayerEventsDispatcher.defaultCenter().removeAllMethodsForNotification();
         call.resolve();
-    }
-
-    public boolean isDeviceTV(Context context) {
-        //Since Android TV is only API 21+ that is the only time we will compare configurations
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UiModeManager uiManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
-            return uiManager != null && uiManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-        }
-        return false;
     }
 
     private Boolean isInRate(Float[] arr, Float rate) {
