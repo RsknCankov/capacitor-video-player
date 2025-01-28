@@ -22,7 +22,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@UnstableApi @CapacitorPlugin(name = "CapacitorVideoPlayer")
+@CapacitorPlugin(name = "CapacitorVideoPlayer")
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
     private final JSObject ret = new JSObject();
