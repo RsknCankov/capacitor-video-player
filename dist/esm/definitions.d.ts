@@ -23,11 +23,38 @@ export interface CapacitorVideoPlayerPlugin {
      *
      */
     playerPause(): Promise<capVideoPlayerResult>;
-    playerStop(): Promise<capVideoPlayerResult>;
+    seekForward(): Promise<void>;
+    seekBackward(): Promise<void>;
     /**
-     * Get the duration of the current video from a given playerId
+     * Seek to the start of the video
      *
      */
+    seekStart(): Promise<void>;
+    /**
+     * Seek to the end of the video
+     *
+     */
+    seekEnd(): Promise<void>;
+    /**
+     * Get the current playback position in milliseconds
+     *
+     */
+    getCurrentTime(): Promise<{
+        currentTime: number;
+    }>;
+    /**
+     * Get the total duration of the video in milliseconds
+     *
+     */
+    getDuration(): Promise<{
+        duration: number;
+    }>;
+    /**
+     * Get the buffered position in milliseconds
+     *
+     */
+    getBuffered(): Promise<TimeRanges | null>;
+    playerStop(): Promise<capVideoPlayerResult>;
     /**
      * Exit player
      *
@@ -39,8 +66,11 @@ export interface CapacitorVideoPlayerPlugin {
      * @param eventName The name of the event to listen for.
      * @param listenerFunc The function to call when the event is triggered.
      */
-    addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void): Promise<PluginListenerHandle>;
+    addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void): Promise<PluginListenerHandle>;
     removeAllListeners(): Promise<void>;
+    selectSubtitleStream(options: {
+        language: string | null;
+    }): Promise<void>;
 }
 export interface capEchoOptions {
     /**
@@ -156,4 +186,18 @@ export interface SubTitleOptions {
      * Font Size in pixels (default 16)
      */
     fontSize?: number;
+}
+export interface TimeRanges {
+    /**
+     * Number of time ranges
+     */
+    length: number;
+    /**
+     * Start time of the specified range in milliseconds
+     */
+    start(index: number): number;
+    /**
+     * End time of the specified range in milliseconds
+     */
+    end(index: number): number;
 }

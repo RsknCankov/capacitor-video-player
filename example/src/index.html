@@ -8,17 +8,63 @@
       content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="format-detection" content="telephone=no" />
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+      button { margin: 5px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+      button:hover { background: #0056b3; }
+      input { margin: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 3px; }
+      label { display: inline-block; width: 120px; }
+    </style>
   </head>
   <body>
     <main>
-      <h1>Capacitor Test Plugin Project</h1>
-      <p>
-        This project can be used to test out the functionality of your plugin. Nothing in the <em>example/</em> folder
-        will be published to npm when using this template, so you can create away!
-      </p>
-      <label for="echoInput">Echo Text:</label>
-      <input type="text" id="echoInput" name="echoInput" value="Hello World!" />
-      <button onclick="testEcho()">Click Me!</button>
+      <h1>Capacitor Video Player Plugin Test</h1>
+      
+      <div class="section">
+        <h2>Echo Test</h2>
+        <label for="echoInput">Echo Text:</label>
+        <input type="text" id="echoInput" name="echoInput" value="Hello World!" />
+        <button onclick="testEcho()">Test Echo</button>
+      </div>
+
+      <div class="section">
+        <h2>Video Player Controls</h2>
+        <button onclick="initVideoPlayer()">Initialize Player</button>
+        <button onclick="setVideoUrl()">Set Video URL</button>
+        <br>
+        <label for="videoUrl">Video URL:</label>
+        <input type="text" id="videoUrl" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" style="width: 300px;" />
+        <br><br>
+        <button onclick="playVideo()">Play</button>
+        <button onclick="pauseVideo()">Pause</button>
+        <button onclick="stopVideo()">Stop</button>
+        <br><br>
+        <button onclick="seekVideo()">Seek To (Removed)</button>
+        <button onclick="seekToStart()">Seek to Start</button>
+        <button onclick="seekToEnd()">Seek to End</button>
+      </div>
+
+      <div class="section">
+        <h2>Video Information</h2>
+        <button onclick="getCurrentTime()">Get Current Time</button>
+        <button onclick="getDuration()">Get Duration</button>
+        <button onclick="getBuffered()">Get Buffered</button>
+        <br><br>
+        <label>Current Time:</label>
+        <span id="currentTimeDisplay">0.0s</span>
+        <br>
+        <label>Duration:</label>
+        <span id="durationDisplay">0.0s</span>
+        <br>
+        <label>Buffered:</label>
+        <div id="bufferedDisplay" style="margin-left: 120px; margin-top: 5px; font-family: monospace; white-space: pre-line;">No buffered ranges</div>
+      </div>
+
+      <div class="section">
+        <h2>Console Output</h2>
+        <p>Check the browser console for detailed logs and event information.</p>
+      </div>
     </main>
 
     <script src="./js/example.js" type="module"></script>

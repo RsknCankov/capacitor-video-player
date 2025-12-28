@@ -1,15 +1,12 @@
 package com.rskn.plugins.capacitor.videoplayer;
 
+import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.media3.common.util.UnstableApi;
 
-import android.app.UiModeManager;
-import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
@@ -41,23 +38,145 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
 
     @PluginMethod
     public void setVideoUrl(PluginCall call) {
-        bridge.getActivity().runOnUiThread(() -> exoActivity.setVideoUrl(call.getString("url")));
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity == null) {
+                initPlayer(call);
+            }
+            exoActivity.setVideoUrl(call.getString("url"));
+            call.resolve();
+        });
     }
 
     @PluginMethod
-    public void playerPlay(PluginCall call){
-        bridge.getActivity().runOnUiThread(() -> exoActivity.play());
+    public void playerPlay(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            exoActivity.play();
+            call.resolve();
+        });
     }
 
     @PluginMethod
     public void playerPause(PluginCall call) {
         bridge.getActivity().runOnUiThread(() -> {
             exoActivity.pausePlayer();
+            call.resolve();
         });
 
     }
 
     @PluginMethod
+    public void seekForward(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.seekForward();
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void seekBackward(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.seekBackward();
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void seekStart(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.seekStart();
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void seekEnd(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.seekEnd();
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void getCurrentTime(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                long currentTime = exoActivity.getCurrentPlayerTime();
+                JSObject result = new JSObject();
+                result.put("currentTime", currentTime);
+                call.resolve(result);
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void getDuration(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                long duration = exoActivity.getDuration();
+                JSObject result = new JSObject();
+                result.put("duration", duration);
+                call.resolve(result);
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
+    public void getBuffered(PluginCall call) {
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                long[] bufferedRanges = exoActivity.getBufferedRanges();
+                JSObject result = new JSObject();
+                
+                if (bufferedRanges.length > 0) {
+                    JSObject timeRanges = new JSObject();
+                    int numRanges = bufferedRanges.length / 2;
+                    timeRanges.put("length", numRanges);
+                    
+                    // Create arrays for start and end times
+                    JSObject startArray = new JSObject();
+                    JSObject endArray = new JSObject();
+                    
+                    for (int i = 0; i < bufferedRanges.length; i += 2) {
+                        int rangeIndex = i / 2;
+                        startArray.put(String.valueOf(rangeIndex), bufferedRanges[i]);
+                        endArray.put(String.valueOf(rangeIndex), bufferedRanges[i + 1]);
+                    }
+                    
+                    timeRanges.put("start", startArray);
+                    timeRanges.put("end", endArray);
+                    result.put("timeRanges", timeRanges);
+                } else {
+                    result.put("timeRanges", null);
+                }
+                
+                call.resolve(result);
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @OptIn(markerClass = UnstableApi.class) @PluginMethod
     public void selectSubtitleStream(PluginCall call) {
         String language = call.getString("language");
         bridge.getActivity().runOnUiThread(() -> {
@@ -261,6 +380,50 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 JSObject data = new JSObject();
                 data.put("subtitleStreams", getInfo().get("subtitle_streams"));
                 notifyListeners("CapVideoPlayerSubtitleStreams", data);
+            }
+        });
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.SELECTED_SUBTITLES_STREAM.name(), new PlayerEventRunnable() {
+            @Override
+            public void run() {
+                JSObject data = new JSObject();
+                data.put("language", getInfo().get("language"));
+                notifyListeners("CapVideoPlayerSelectedSubtitlesStream", data);
+            }
+        });
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.PLAYER_TIME_UPDATE.name(), new PlayerEventRunnable() {
+            @OptIn(markerClass = UnstableApi.class)
+            @Override
+            public void run() {
+                JSObject data = new JSObject();
+                if (exoActivity != null) {
+                    long currentTime = exoActivity.getCurrentPlayerTime();
+                    data.put("currentTime", currentTime);
+                } else {
+                    data.put("currentTime", 0);
+                }
+                notifyListeners("CapVideoPlayerCurrentTime", data);
+            }
+        });
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.HLS_X_PROGRAM_DATE_TIME.name(), new PlayerEventRunnable() {
+            @OptIn(markerClass = UnstableApi.class)
+            @Override
+            public void run() {
+                JSObject data = new JSObject();
+                if (exoActivity != null) {
+                    data.put("playlist_datetime", getInfo().get("playlist_datetime"));
+                }
+                notifyListeners("CapVideoPlayerHLSProgramDateTimeTag", data);
+            }
+        });
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.HLS_TARGET_DURATION.name(), new PlayerEventRunnable() {
+            @OptIn(markerClass = UnstableApi.class)
+            @Override
+            public void run() {
+                JSObject data = new JSObject();
+                if (exoActivity != null) {
+                    data.put("target_duration", getInfo().get("target_duration"));
+                }
+                notifyListeners("CapVideoPlayerHLSTargetDuration", data);
             }
         });
     }

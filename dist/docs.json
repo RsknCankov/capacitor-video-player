@@ -70,6 +70,78 @@
         "slug": "playerpause"
       },
       {
+        "name": "seekForward",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "seekforward"
+      },
+      {
+        "name": "seekBackward",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "seekbackward"
+      },
+      {
+        "name": "seekStart",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Seek to the start of the video",
+        "complexTypes": [],
+        "slug": "seekstart"
+      },
+      {
+        "name": "seekEnd",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "Seek to the end of the video",
+        "complexTypes": [],
+        "slug": "seekend"
+      },
+      {
+        "name": "getCurrentTime",
+        "signature": "() => Promise<{ currentTime: number; }>",
+        "parameters": [],
+        "returns": "Promise<{ currentTime: number; }>",
+        "tags": [],
+        "docs": "Get the current playback position in milliseconds",
+        "complexTypes": [],
+        "slug": "getcurrenttime"
+      },
+      {
+        "name": "getDuration",
+        "signature": "() => Promise<{ duration: number; }>",
+        "parameters": [],
+        "returns": "Promise<{ duration: number; }>",
+        "tags": [],
+        "docs": "Get the total duration of the video in milliseconds",
+        "complexTypes": [],
+        "slug": "getduration"
+      },
+      {
+        "name": "getBuffered",
+        "signature": "() => Promise<TimeRanges | null>",
+        "parameters": [],
+        "returns": "Promise<TimeRanges | null>",
+        "tags": [],
+        "docs": "Get the buffered position in milliseconds",
+        "complexTypes": [
+          "TimeRanges"
+        ],
+        "slug": "getbuffered"
+      },
+      {
         "name": "playerStop",
         "signature": "() => Promise<capVideoPlayerResult>",
         "parameters": [],
@@ -95,12 +167,12 @@
       },
       {
         "name": "addListener",
-        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
+        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
         "parameters": [
           {
             "name": "eventName",
             "docs": "The name of the event to listen for.",
-            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSubtitleStreams'"
+            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams'"
           },
           {
             "name": "listenerFunc",
@@ -123,7 +195,7 @@
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayersubtitlestreams-"
+        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayerselectedsubtitlesstream--capvideoplayercurrenttime--capvideoplayerhlsprogramdatetimetag--capvideoplayerhlstargetduration--capvideoplayersubtitlestreams-"
       },
       {
         "name": "removeAllListeners",
@@ -134,6 +206,22 @@
         "docs": "",
         "complexTypes": [],
         "slug": "removealllisteners"
+      },
+      {
+        "name": "selectSubtitleStream",
+        "signature": "(options: { language: string | null; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ language: string | null; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "selectsubtitlestream"
       }
     ],
     "properties": []
@@ -173,6 +261,55 @@
           "docs": "message string",
           "complexTypes": [],
           "type": "string | undefined"
+        }
+      ]
+    },
+    {
+      "name": "TimeRanges",
+      "slug": "timeranges",
+      "docs": "",
+      "tags": [],
+      "methods": [
+        {
+          "name": "start",
+          "signature": "(index: number) => number",
+          "parameters": [
+            {
+              "name": "index",
+              "docs": "",
+              "type": "number"
+            }
+          ],
+          "returns": "number",
+          "tags": [],
+          "docs": "Start time of the specified range in milliseconds",
+          "complexTypes": [],
+          "slug": "start"
+        },
+        {
+          "name": "end",
+          "signature": "(index: number) => number",
+          "parameters": [
+            {
+              "name": "index",
+              "docs": "",
+              "type": "number"
+            }
+          ],
+          "returns": "number",
+          "tags": [],
+          "docs": "End time of the specified range in milliseconds",
+          "complexTypes": [],
+          "slug": "end"
+        }
+      ],
+      "properties": [
+        {
+          "name": "length",
+          "tags": [],
+          "docs": "Number of time ranges",
+          "complexTypes": [],
+          "type": "number"
         }
       ]
     },

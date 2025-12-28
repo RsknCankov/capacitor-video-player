@@ -27,16 +27,64 @@ public class CapacitorExoActivity extends Fragment {
     public int x;
     public int y;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(getResources().getIdentifier("video_player_activity", "layout", requireActivity().getPackageName()), container, false);
-        attachPlayerView();
-        return view;
+    public void setVideoUrl(String url) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setVideoUrl(url);
+        }
+    }
+
+    public void play() {
+        if (videoPlayerView != null) {
+            videoPlayerView.playerPlay();
+        }
+    }
+
+    public void pausePlayer() {
+        videoPlayerView.playerPause();
     }
 
     public void selectSubtitleStream(String language) {
         videoPlayerView.selectSubtitleStream(language);
+    }
+
+    public long getCurrentPlayerTime() {
+        return videoPlayerView.getCurrentTime();
+    }
+
+    public void seekForward() {
+        if (videoPlayerView != null) {
+            videoPlayerView.seekForward();
+        }
+    }
+
+    public void seekBackward() {
+        if (videoPlayerView != null) {
+            videoPlayerView.seekBackward();
+        }
+    }
+
+    public void seekStart() {
+        if (videoPlayerView != null) {
+            videoPlayerView.seekStart();
+        }
+    }
+
+    public void seekEnd() {
+        if (videoPlayerView != null) {
+            videoPlayerView.seekEnd();
+        }
+    }
+
+    public long getDuration() {
+        return videoPlayerView.getDuration();
+    }
+
+    public long getBuffered() {
+        return videoPlayerView.getBuffered();
+    }
+
+    public long[] getBufferedRanges() {
+        return videoPlayerView.getBufferedRanges();
     }
 
     public void setRect(int x, int y, int width, int height) {
@@ -62,6 +110,14 @@ public class CapacitorExoActivity extends Fragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        view = inflater.inflate(getResources().getIdentifier("video_player_activity", "layout", requireActivity().getPackageName()), container, false);
+        attachPlayerView();
+        return view;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
     }
@@ -69,22 +125,6 @@ public class CapacitorExoActivity extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    public void setVideoUrl(String url) {
-        if (videoPlayerView != null) {
-            videoPlayerView.setVideoUrl(url);
-        }
-    }
-
-    public void play() {
-        if (videoPlayerView != null) {
-            videoPlayerView.playerPlay();
-        }
-    }
-
-    public void pausePlayer() {
-        videoPlayerView.playerPause();
     }
 
 }
