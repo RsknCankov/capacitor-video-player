@@ -3,6 +3,8 @@ package com.rskn.plugins.capacitor.videoplayer;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -50,6 +52,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
     // Add an AtomicBoolean to manage the lock
     private final AtomicBoolean isPlayerReleased = new AtomicBoolean(false);
+    private final Handler releaseHandler = new Handler(Looper.getMainLooper());
 
     VideoPlayerManager(Context context, PlayerView playerView, LifecycleOwner lifecycleOwner) {
         lifecycleOwner.getLifecycle().addObserver(this);
@@ -420,10 +423,60 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         // Check and set the lock to ensure releasePlayer is called only once
         if (isPlayerReleased.compareAndSet(false, true)) {
             if (exoPlayer != null) {
-                exoPlayer.stop();
-                exoPlayer.release();
-                exoPlayer = null;
-                Log.d(TAG, "Player released");
+                final ExoPlayer playerToRelease = exoPlayer;
+                exoPlayer = null;  // Immediately null out the reference
+
+                // Post release to background thread with error handling
+                new Thread(() -> {
+                    try {
+                        Log.d(TAG, "Starting player release on background thread...");
+
+                        // Stop first (quick operation)
+                        try {
+                            playerToRelease.stop();
+                            Log.d(TAG, "Player stopped successfully");
+                        } catch (Exception e) {
+                            Log.w(TAG, "Error stopping player (continuing with release)", e);
+                        }
+
+                        // Release with timeout monitoring
+                        final long startTime = System.currentTimeMillis();
+                        final AtomicBoolean releaseCompleted = new AtomicBoolean(false);
+
+                        // Start release operation
+                        Thread releaseThread = new Thread(() -> {
+                            try {
+                                playerToRelease.release();
+                                releaseCompleted.set(true);
+                                Log.d(TAG, "Player released successfully in " + (System.currentTimeMillis() - startTime) + "ms");
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error during player release", e);
+                            }
+                        });
+                        releaseThread.start();
+
+                        // Wait max 5 seconds for release to complete
+                        try {
+                            releaseThread.join(5000);
+                        } catch (InterruptedException e) {
+                            Log.w(TAG, "Release thread interrupted", e);
+                        }
+
+                        if (!releaseCompleted.get()) {
+                            Log.w(TAG, "Player release timed out after 5s, but continuing anyway");
+                            // Don't throw error to Sentry - this is expected on slow devices
+                        }
+
+                    } catch (Exception e) {
+                        Log.e(TAG, "Unexpected error in releasePlayer", e);
+                    } finally {
+                        // Reset lock for next initialization
+                        releaseHandler.post(() -> {
+                            isPlayerReleased.set(false);
+                            Log.d(TAG, "Release lock reset, player can be re-initialized");
+                        });
+                    }
+                }).start();
             }
         }
     }

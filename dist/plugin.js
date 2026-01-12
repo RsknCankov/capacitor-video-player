@@ -80,8 +80,6 @@ var capacitorExample = (function (exports, core) {
 
     exports.CapacitorVideoPlayer = CapacitorVideoPlayer;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
-
     return exports;
 
 })({}, capacitorExports);
