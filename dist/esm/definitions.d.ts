@@ -26,6 +26,11 @@ export interface CapacitorVideoPlayerPlugin {
     seekForward(): Promise<void>;
     seekBackward(): Promise<void>;
     /**
+     * Seek to an absolute position in the video
+     * @param options.position Position in milliseconds
+     */
+    seekToPosition(options: { position: number }): Promise<void>;
+    /**
      * Seek to the start of the video
      *
      */

@@ -10,6 +10,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
         return Promise.resolve();
     }
 
+    seekToPosition(_options: { position: number }): Promise<void> {
+        console.log('seekToPosition method not implemented on web.');
+        return Promise.resolve();
+    }
+
     seekStart(): Promise<void> {
         console.log('seekStart method not implemented.');
         return Promise.resolve();

@@ -75,6 +75,12 @@ public class CapacitorExoActivity extends Fragment {
         }
     }
 
+    public void seekToPosition(long positionMs) {
+        if (videoPlayerView != null) {
+            videoPlayerView.seekToPosition(positionMs);
+        }
+    }
+
     public long getDuration() {
         return videoPlayerView.getDuration();
     }

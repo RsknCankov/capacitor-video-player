@@ -211,6 +211,14 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         }
     }
 
+    public void seekToPosition(long positionMs) {
+        if (exoPlayer != null) {
+            long duration = exoPlayer.getDuration();
+            long clampedPosition = Math.max(0, duration != C.TIME_UNSET && duration > 0 ? Math.min(positionMs, duration - 1) : positionMs);
+            exoPlayer.seekTo(clampedPosition);
+        }
+    }
+
     public long getDuration() {
         if (exoPlayer != null) {
             long duration = exoPlayer.getDuration();

@@ -113,6 +113,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void seekToPosition(PluginCall call) {
+        long positionMs = call.getDouble("position", 0.0).longValue();
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.seekToPosition(positionMs);
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
+    @PluginMethod
     public void getCurrentTime(PluginCall call) {
         bridge.getActivity().runOnUiThread(() -> {
             if (exoActivity != null) {
@@ -282,6 +295,12 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                             FrameLayout containerView = getBridge().getActivity().findViewById(containerViewId);
 
                             if (containerView != null) {
+                                // Pause synchronously before the async fragment removal so ExoPlayer
+                                // stops audio/video output immediately rather than continuing until
+                                // the background release thread finishes.
+                                if (exoActivity != null) {
+                                    exoActivity.pausePlayer();
+                                }
                                 ((ViewGroup) getBridge().getWebView().getParent()).removeView(containerView);
                                 getBridge().getWebView().setBackgroundColor(Color.BLACK);
                                 FragmentManager fragmentManager = getBridge().getActivity().getSupportFragmentManager();
@@ -431,6 +450,36 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     @Override
     protected void handleOnResume() {
         super.handleOnResume();
+    }
+
+    @Override
+    protected void handleOnPause() {
+        super.handleOnPause();
+        // Pause playback synchronously when the app goes to background (Home button,
+        // recent apps, incoming call, etc.). This ensures ExoPlayer stops producing
+        // audio/video before the Fragment's onPause → releasePlayer() background thread
+        // runs, eliminating the race window where sound continues to play.
+        if (exoActivity != null) {
+            bridge.getActivity().runOnUiThread(() -> {
+                if (exoActivity != null) {
+                    exoActivity.pausePlayer();
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void handleOnStop() {
+        super.handleOnStop();
+        // Belt-and-suspenders: also pause on onStop in case onPause was not enough
+        // (e.g. picture-in-picture or multi-window scenarios on Android TV).
+        if (exoActivity != null) {
+            bridge.getActivity().runOnUiThread(() -> {
+                if (exoActivity != null) {
+                    exoActivity.pausePlayer();
+                }
+            });
+        }
     }
 
 }
