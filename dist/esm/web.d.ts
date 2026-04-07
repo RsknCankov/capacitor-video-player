@@ -3,6 +3,9 @@ import type { CapacitorVideoPlayerPlugin, capVideoPlayerResult, TimeRanges } fro
 export declare class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideoPlayerPlugin {
     seekForward(): Promise<void>;
     seekBackward(): Promise<void>;
+    seekToPosition(_options: {
+        position: number;
+    }): Promise<void>;
     seekStart(): Promise<void>;
     seekEnd(): Promise<void>;
     selectSubtitleStream(options: {

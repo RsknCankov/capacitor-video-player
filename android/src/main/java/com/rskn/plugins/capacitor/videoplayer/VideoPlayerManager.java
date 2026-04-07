@@ -183,20 +183,27 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         return 0;
     }
 
+    private void emitSeeking() {
+        PlayerEventsDispatcher.defaultCenter().postNotification(PlayerEventTypes.SEEKING.name(), null);
+    }
+
     public void seekForward(){
         if (exoPlayer != null) {
+            emitSeeking();
             exoPlayer.seekForward();
         }
     }
 
     public void seekBackward(){
         if (exoPlayer != null) {
+            emitSeeking();
             exoPlayer.seekBack();
         }
     }
 
     public void seekStart() {
         if (exoPlayer != null) {
+            emitSeeking();
             exoPlayer.seekTo(0);
         }
     }
@@ -205,7 +212,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         if (exoPlayer != null) {
             long duration = exoPlayer.getDuration();
             if (duration != C.TIME_UNSET && duration > 0) {
-                // Seek to the end of the video (duration - 1 to avoid going past the end)
+                emitSeeking();
                 exoPlayer.seekTo(Math.max(0, duration - 1));
             }
         }
@@ -215,6 +222,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         if (exoPlayer != null) {
             long duration = exoPlayer.getDuration();
             long clampedPosition = Math.max(0, duration != C.TIME_UNSET && duration > 0 ? Math.min(positionMs, duration - 1) : positionMs);
+            emitSeeking();
             exoPlayer.seekTo(clampedPosition);
         }
     }

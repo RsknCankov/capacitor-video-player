@@ -18,6 +18,7 @@ import androidx.media3.common.text.CueGroup;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlaybackException;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.BehindLiveWindowException;
 import androidx.media3.extractor.metadata.emsg.EventMessage;
 
 import org.json.JSONException;
@@ -34,8 +35,10 @@ import java.util.Map;
 public class ExoPlayerListener implements Player.Listener {
 
     private final String TAG = "ExoPlayerListener";
+    private final ExoPlayer exoPlayer;
 
     public @OptIn(markerClass = UnstableApi.class) ExoPlayerListener(ExoPlayer exoPlayer) {
+        this.exoPlayer = exoPlayer;
         Log.d(TAG, "ExoPlayerListener initialized.");
     }
 
@@ -151,6 +154,10 @@ public void onTrackSelectionParametersChanged(@NonNull TrackSelectionParameters 
         Log.d(TAG, "Position discontinuity: " + oldPositionMs + "ms -> " + newPositionMs +
                 "ms (jump: " + jumpMs + "ms, reason: " + reasonStr + ")");
 
+        if (reason == Player.DISCONTINUITY_REASON_SEEK || reason == Player.DISCONTINUITY_REASON_SEEK_ADJUSTMENT) {
+            PlayerEventsDispatcher.defaultCenter().postNotification(PlayerEventTypes.SEEKED.name(), null);
+        }
+
         // Detect significant gaps that may indicate buffer holes or missing segments
         if (Math.abs(jumpMs) > 5000 && reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
             Log.w(TAG, "Large automatic position jump detected: " + jumpMs +
@@ -170,6 +177,15 @@ public void onTrackSelectionParametersChanged(@NonNull TrackSelectionParameters 
     public void onPlayerError(@NonNull PlaybackException error) {
         ExoPlaybackException exoError = (ExoPlaybackException) error;
         @Nullable Throwable cause = error.getCause();
+
+        // BehindLiveWindowException: seek to the nearest available position and resume
+        // transparently — no error event emitted to the JS layer.
+        if (cause instanceof BehindLiveWindowException) {
+            Log.w(TAG, "BehindLiveWindowException: seeking to default position and resuming");
+            exoPlayer.seekToDefaultPosition();
+            exoPlayer.prepare();
+            return;
+        }
 
         // Enhanced error classification
         String errorType;

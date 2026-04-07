@@ -13,6 +13,10 @@ class CapacitorVideoPlayerWeb extends core.WebPlugin {
     seekBackward() {
         return Promise.resolve();
     }
+    seekToPosition(_options) {
+        console.log('seekToPosition method not implemented on web.');
+        return Promise.resolve();
+    }
     seekStart() {
         console.log('seekStart method not implemented.');
         return Promise.resolve();

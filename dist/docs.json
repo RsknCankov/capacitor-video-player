@@ -90,6 +90,27 @@
         "slug": "seekbackward"
       },
       {
+        "name": "seekToPosition",
+        "signature": "(options: { position: number; }) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "{ position: number; }"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [
+          {
+            "name": "param",
+            "text": "options.position Position in milliseconds"
+          }
+        ],
+        "docs": "Seek to an absolute position in the video",
+        "complexTypes": [],
+        "slug": "seektoposition"
+      },
+      {
         "name": "seekStart",
         "signature": "() => Promise<void>",
         "parameters": [],
@@ -167,12 +188,12 @@
       },
       {
         "name": "addListener",
-        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
+        "signature": "(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>",
         "parameters": [
           {
             "name": "eventName",
             "docs": "The name of the event to listen for.",
-            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams'"
+            "type": "'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked'"
           },
           {
             "name": "listenerFunc",
@@ -195,7 +216,7 @@
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayerselectedsubtitlesstream--capvideoplayercurrenttime--capvideoplayerhlsprogramdatetimetag--capvideoplayerhlstargetduration--capvideoplayersubtitlestreams-"
+        "slug": "addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayerselectedsubtitlesstream--capvideoplayercurrenttime--capvideoplayerhlsprogramdatetimetag--capvideoplayerhlstargetduration--capvideoplayersubtitlestreams--capvideoplayerseeking--capvideoplayerseeked-"
       },
       {
         "name": "removeAllListeners",

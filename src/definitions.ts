@@ -93,7 +93,9 @@ export interface CapacitorVideoPlayerPlugin {
             | 'CapVideoPlayerCurrentTime'
             | 'CapVideoPlayerHLSProgramDateTimeTag'
             | 'CapVideoPlayerHLSTargetDuration'
-            | 'CapVideoPlayerSubtitleStreams',
+            | 'CapVideoPlayerSubtitleStreams'
+            | 'CapVideoPlayerSeeking'
+            | 'CapVideoPlayerSeeked',
         listenerFunc: (event: any) => void,
     ): Promise<PluginListenerHandle>;
 

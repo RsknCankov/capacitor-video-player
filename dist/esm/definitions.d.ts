@@ -29,7 +29,9 @@ export interface CapacitorVideoPlayerPlugin {
      * Seek to an absolute position in the video
      * @param options.position Position in milliseconds
      */
-    seekToPosition(options: { position: number }): Promise<void>;
+    seekToPosition(options: {
+        position: number;
+    }): Promise<void>;
     /**
      * Seek to the start of the video
      *
@@ -71,7 +73,7 @@ export interface CapacitorVideoPlayerPlugin {
      * @param eventName The name of the event to listen for.
      * @param listenerFunc The function to call when the event is triggered.
      */
-    addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void): Promise<PluginListenerHandle>;
+    addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked', listenerFunc: (event: any) => void): Promise<PluginListenerHandle>;
     removeAllListeners(): Promise<void>;
     selectSubtitleStream(options: {
         language: string | null;

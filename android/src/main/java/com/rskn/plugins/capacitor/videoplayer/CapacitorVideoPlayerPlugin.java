@@ -434,6 +434,20 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 notifyListeners("CapVideoPlayerHLSProgramDateTimeTag", data);
             }
         });
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.SEEKING.name(), new PlayerEventRunnable() {
+            @Override
+            public void run() {
+                notifyListeners("CapVideoPlayerSeeking", new JSObject());
+            }
+        });
+
+        PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.SEEKED.name(), new PlayerEventRunnable() {
+            @Override
+            public void run() {
+                notifyListeners("CapVideoPlayerSeeked", new JSObject());
+            }
+        });
+
         PlayerEventsDispatcher.defaultCenter().addMethodForNotification(PlayerEventTypes.HLS_TARGET_DURATION.name(), new PlayerEventRunnable() {
             @OptIn(markerClass = UnstableApi.class)
             @Override

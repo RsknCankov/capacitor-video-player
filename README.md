@@ -20,6 +20,7 @@ npx cap sync
 * [`playerPause()`](#playerpause)
 * [`seekForward()`](#seekforward)
 * [`seekBackward()`](#seekbackward)
+* [`seekToPosition(...)`](#seektoposition)
 * [`seekStart()`](#seekstart)
 * [`seekEnd()`](#seekend)
 * [`getCurrentTime()`](#getcurrenttime)
@@ -27,7 +28,7 @@ npx cap sync
 * [`getBuffered()`](#getbuffered)
 * [`playerStop()`](#playerstop)
 * [`exitPlayer()`](#exitplayer)
-* [`addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', ...)`](#addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayerselectedsubtitlesstream--capvideoplayercurrenttime--capvideoplayerhlsprogramdatetimetag--capvideoplayerhlstargetduration--capvideoplayersubtitlestreams-)
+* [`addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked', ...)`](#addlistenercapvideoplayerbuffering--capvideoplayeridle--capvideoplayerplaying--capvideoplayerready--capvideoplayererror--capvideoplayerend--capvideoplayerselectedsubtitlesstream--capvideoplayercurrenttime--capvideoplayerhlsprogramdatetimetag--capvideoplayerhlstargetduration--capvideoplayersubtitlestreams--capvideoplayerseeking--capvideoplayerseeked-)
 * [`removeAllListeners()`](#removealllisteners)
 * [`selectSubtitleStream(...)`](#selectsubtitlestream)
 * [Interfaces](#interfaces)
@@ -120,6 +121,21 @@ seekBackward() => Promise<void>
 --------------------
 
 
+### seekToPosition(...)
+
+```typescript
+seekToPosition(options: { position: number; }) => Promise<void>
+```
+
+Seek to an absolute position in the video
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ position: number; }</code> |
+
+--------------------
+
+
 ### seekStart()
 
 ```typescript
@@ -205,18 +221,18 @@ Exit player
 --------------------
 
 
-### addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', ...)
+### addListener('CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked', ...)
 
 ```typescript
-addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>
+addListener(eventName: 'CapVideoPlayerBuffering' | 'CapVideoPlayerIdle' | 'CapVideoPlayerPlaying' | 'CapVideoPlayerReady' | 'CapVideoPlayerError' | 'CapVideoPlayerEnd' | 'CapVideoPlayerSelectedSubtitlesStream' | 'CapVideoPlayerCurrentTime' | 'CapVideoPlayerHLSProgramDateTimeTag' | 'CapVideoPlayerHLSTargetDuration' | 'CapVideoPlayerSubtitleStreams' | 'CapVideoPlayerSeeking' | 'CapVideoPlayerSeeked', listenerFunc: (event: any) => void) => Promise<PluginListenerHandle>
 ```
 
 Add event listeners for player events.
 
-| Param              | Type                                                                                                                                                                                                                                                                                                                                                          | Description                                       |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| **`eventName`**    | <code>'CapVideoPlayerBuffering' \| 'CapVideoPlayerIdle' \| 'CapVideoPlayerPlaying' \| 'CapVideoPlayerReady' \| 'CapVideoPlayerError' \| 'CapVideoPlayerEnd' \| 'CapVideoPlayerSelectedSubtitlesStream' \| 'CapVideoPlayerCurrentTime' \| 'CapVideoPlayerHLSProgramDateTimeTag' \| 'CapVideoPlayerHLSTargetDuration' \| 'CapVideoPlayerSubtitleStreams'</code> | The name of the event to listen for.              |
-| **`listenerFunc`** | <code>(event: any) =&gt; void</code>                                                                                                                                                                                                                                                                                                                          | The function to call when the event is triggered. |
+| Param              | Type                                                                                                                                                                                                                                                                                                                                                                                                               | Description                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| **`eventName`**    | <code>'CapVideoPlayerBuffering' \| 'CapVideoPlayerIdle' \| 'CapVideoPlayerPlaying' \| 'CapVideoPlayerReady' \| 'CapVideoPlayerError' \| 'CapVideoPlayerEnd' \| 'CapVideoPlayerSelectedSubtitlesStream' \| 'CapVideoPlayerCurrentTime' \| 'CapVideoPlayerHLSProgramDateTimeTag' \| 'CapVideoPlayerHLSTargetDuration' \| 'CapVideoPlayerSubtitleStreams' \| 'CapVideoPlayerSeeking' \| 'CapVideoPlayerSeeked'</code> | The name of the event to listen for.              |
+| **`listenerFunc`** | <code>(event: any) =&gt; void</code>                                                                                                                                                                                                                                                                                                                                                                               | The function to call when the event is triggered. |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
 
