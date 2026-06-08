@@ -11,6 +11,9 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     selectSubtitleStream(options: {
         language: string | null;
     }): Promise<void>;
+    setSubtitleFontSize(_options: {
+        fontSize: number;
+    }): Promise<void>;
     getCurrentSubtitleStream(): Promise<{
         subtitles: string;
     }>;

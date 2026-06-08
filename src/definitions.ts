@@ -102,6 +102,8 @@ export interface CapacitorVideoPlayerPlugin {
     removeAllListeners(): Promise<void>;
 
     selectSubtitleStream(options: { language: string | null }): Promise<void>;
+
+    setSubtitleFontSize(options: { fontSize: number }): Promise<void>;
 }
 
 export interface capEchoOptions {

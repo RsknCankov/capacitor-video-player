@@ -47,6 +47,12 @@ public class CapacitorExoActivity extends Fragment {
         videoPlayerView.selectSubtitleStream(language);
     }
 
+    public void setSubtitleFontSize(float fontSizePx) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setSubtitleFontSize(fontSizePx);
+        }
+    }
+
     public long getCurrentPlayerTime() {
         return videoPlayerView.getCurrentTime();
     }

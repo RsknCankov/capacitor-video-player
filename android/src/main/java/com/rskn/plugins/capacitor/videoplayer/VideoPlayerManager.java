@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -79,6 +80,13 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
     public void playerPause() {
         exoPlayer.pause();
+    }
+
+    public void setSubtitleFontSize(float fontSizePx) {
+        androidx.media3.ui.SubtitleView subtitleView = playerView.getSubtitleView();
+        if (subtitleView != null) {
+            subtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, fontSizePx);
+        }
     }
 
     public void selectSubtitleStream(String language) {

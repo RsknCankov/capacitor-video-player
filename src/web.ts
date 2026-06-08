@@ -30,6 +30,10 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
         return Promise.resolve();
     }
 
+    setSubtitleFontSize(_options: { fontSize: number }): Promise<void> {
+        return Promise.resolve();
+    }
+
     getCurrentSubtitleStream(): Promise<{ subtitles: string }> {
         return Promise.resolve({subtitles: 'subtitles'});
     }
