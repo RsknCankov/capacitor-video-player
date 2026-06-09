@@ -22,6 +22,9 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         console.log(`Selected stream: ${options.language}`);
         return Promise.resolve();
     }
+    setSubtitleFontSize(_options) {
+        return Promise.resolve();
+    }
     getCurrentSubtitleStream() {
         return Promise.resolve({ subtitles: 'subtitles' });
     }

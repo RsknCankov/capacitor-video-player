@@ -189,6 +189,23 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         });
     }
 
+    @PluginMethod
+    public void setSubtitleFontSize(PluginCall call) {
+        Float fontSize = call.getFloat("fontSize");
+        if (fontSize == null) {
+            call.reject("fontSize is required");
+            return;
+        }
+        bridge.getActivity().runOnUiThread(() -> {
+            if (exoActivity != null) {
+                exoActivity.setSubtitleFontSize(fontSize);
+                call.resolve();
+            } else {
+                call.reject("Player not initialized");
+            }
+        });
+    }
+
     @OptIn(markerClass = UnstableApi.class) @PluginMethod
     public void selectSubtitleStream(PluginCall call) {
         String language = call.getString("language");
