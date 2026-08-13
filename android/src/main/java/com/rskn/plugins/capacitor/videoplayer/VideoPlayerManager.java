@@ -20,6 +20,7 @@ import androidx.media3.common.C;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultDataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.datasource.ResolvingDataSource;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -54,6 +55,16 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
     // Add an AtomicBoolean to manage the lock
     private final AtomicBoolean isPlayerReleased = new AtomicBoolean(false);
     private final Handler releaseHandler = new Handler(Looper.getMainLooper());
+
+    // Stream authorization token taken from the URL we are asked to play. HLS playlists
+    // reference their variants and segments with relative URIs, so only the top-level
+    // playlist request carries stream_session. Flussonic normally keeps the session alive,
+    // but as soon as it reclassifies a mid-playback segment request as a new session it
+    // re-authorizes it against the middleware — with no token — and answers 403.
+    // Both fields are volatile so a token refresh applies to every subsequent request.
+    private static final String STREAM_SESSION_PARAM = "stream_session";
+    private volatile String streamSession;
+    private volatile String streamSessionHost;
 
     VideoPlayerManager(Context context, PlayerView playerView, LifecycleOwner lifecycleOwner) {
         lifecycleOwner.getLifecycle().addObserver(this);
@@ -144,7 +155,61 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
                         .setReadTimeoutMs(30000)     // 30s read timeout
                         .setAllowCrossProtocolRedirects(true);
 
-        return new DefaultDataSource.Factory(context, httpDataSourceFactory);
+        // ResolvingDataSource rewrites every outgoing DataSpec — multivariant playlist,
+        // media playlist, segments and encryption keys alike — so the stream token travels
+        // with the whole session instead of only the first request.
+        return new ResolvingDataSource.Factory(
+                new DefaultDataSource.Factory(context, httpDataSourceFactory),
+                (ResolvingDataSource.Resolver) dataSpec -> {
+                    Uri resolved = withStreamSession(dataSpec.uri);
+                    return resolved == dataSpec.uri ? dataSpec : dataSpec.withUri(resolved);
+                });
+    }
+
+    /**
+     * Appends the current stream_session token to {@code uri}, or returns it untouched when the
+     * token does not apply. Returns the very same instance when nothing changed so callers can
+     * skip rebuilding the DataSpec.
+     */
+    private Uri withStreamSession(Uri uri) {
+        String token = streamSession;
+        String host = streamSessionHost;
+        if (token == null || token.isEmpty() || uri == null) {
+            return uri;
+        }
+        String scheme = uri.getScheme();
+        if (!"http".equals(scheme) && !"https".equals(scheme)) {
+            return uri;
+        }
+        // Never leak the token to a different origin than the one we were asked to play.
+        if (host != null && !host.equalsIgnoreCase(uri.getHost())) {
+            return uri;
+        }
+        try {
+            if (uri.getQueryParameter(STREAM_SESSION_PARAM) != null) {
+                return uri;  // already tokenized (the top-level playlist URL)
+            }
+        } catch (UnsupportedOperationException e) {
+            return uri;  // opaque URI, nothing to append to
+        }
+        return uri.buildUpon().appendQueryParameter(STREAM_SESSION_PARAM, token).build();
+    }
+
+    /** Remembers the stream token carried by the URL we are about to play. */
+    private void captureStreamSession(String url) {
+        String token = null;
+        String host = null;
+        try {
+            Uri uri = Uri.parse(url);
+            token = uri.getQueryParameter(STREAM_SESSION_PARAM);
+            host = uri.getHost();
+        } catch (UnsupportedOperationException | NullPointerException e) {
+            Log.w(TAG, "Could not read " + STREAM_SESSION_PARAM + " from stream URL");
+        }
+        streamSession = token;
+        streamSessionHost = host;
+        Log.d(TAG, "Stream session token " + (token != null ? "captured" : "absent")
+                + " for host " + host);
     }
 
     private void initializePlayer(Context context, PlayerView playerView) {
@@ -298,6 +363,9 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         boolean isTimeshift = isTimeshiftStream(url);
         String streamType = isTimeshift ? "TIMESHIFT" : "LIVE";
 
+        // Must run before any request goes out so the resolver has the token to hand.
+        captureStreamSession(url);
+
         // Reinitialize player if stream type changed or player doesn't exist
         // This ensures we use the correct LoadControl configuration
         if (exoPlayer == null) {
@@ -379,7 +447,10 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
                 if (playlist instanceof HlsMultivariantPlaylist multivariantPlaylist) {
                     if (!multivariantPlaylist.variants.isEmpty()) {
-                        Uri mediaPlaylistUri = multivariantPlaylist.variants.get(0).url;
+                        // The variant URI is relative to the multivariant playlist and therefore
+                        // carries no token. This fetch bypasses ExoPlayer's DataSource stack, so
+                        // the resolver never sees it — tokenize it explicitly.
+                        Uri mediaPlaylistUri = withStreamSession(multivariantPlaylist.variants.get(0).url);
                         connection = (HttpURLConnection) new URL(mediaPlaylistUri.toString()).openConnection();
                         inputStream = connection.getInputStream();
                         playlist = new HlsPlaylistParser().parse(mediaPlaylistUri, inputStream);

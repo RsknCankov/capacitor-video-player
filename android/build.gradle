@@ -61,6 +61,9 @@ dependencies {
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation 'androidx.media3:media3-exoplayer:1.4.1'
+    // Pulled in transitively by media3-exoplayer; declared explicitly because we use
+    // ResolvingDataSource directly and must not depend on it staying transitive.
+    implementation 'androidx.media3:media3-datasource:1.4.1'
     implementation 'androidx.media3:media3-exoplayer-dash:1.4.1'
     implementation 'androidx.media3:media3-exoplayer-smoothstreaming:1.4.1'
     implementation 'androidx.media3:media3-exoplayer-hls:1.4.1'
