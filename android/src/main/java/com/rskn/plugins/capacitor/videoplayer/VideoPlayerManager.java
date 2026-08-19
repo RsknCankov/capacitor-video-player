@@ -103,15 +103,17 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
     public void selectSubtitleStream(String language) {
         if (exoPlayer != null && language != null) {
             TrackSelectionParameters.Builder parametersBuilder = exoPlayer.getTrackSelectionParameters().buildUpon();
+            parametersBuilder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false);
             parametersBuilder.setPreferredTextLanguage(language);
             exoPlayer.setTrackSelectionParameters(parametersBuilder.build());
             Log.d(TAG, "Subtitle stream selected: " + language);
         }
         if (exoPlayer != null && language == null) {
             TrackSelectionParameters.Builder parametersBuilder = exoPlayer.getTrackSelectionParameters().buildUpon();
+            parametersBuilder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true);
             parametersBuilder.setPreferredTextLanguage(null);
             exoPlayer.setTrackSelectionParameters(parametersBuilder.build());
-            Log.d(TAG, "Subtitle stream selected: " + language);
+            Log.d(TAG, "Subtitle stream disabled");
         }
     }
 
