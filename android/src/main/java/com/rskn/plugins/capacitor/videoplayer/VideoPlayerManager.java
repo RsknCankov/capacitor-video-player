@@ -79,18 +79,24 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         }
     }
 
+    // exoPlayer is nulled synchronously by releasePlayer() (onPause/onStop/onDestroy) and only
+    // rebuilt in onResume, so every public entry point must tolerate a released player.
     public void playerPlay() {
-        if (!exoPlayer.isPlaying()) {
+        if (exoPlayer != null && !exoPlayer.isPlaying()) {
             exoPlayer.play();
         }
     }
 
     public void playerStop() {
-        exoPlayer.stop();
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+        }
     }
 
     public void playerPause() {
-        exoPlayer.pause();
+        if (exoPlayer != null) {
+            exoPlayer.pause();
+        }
     }
 
     public void setSubtitleFontSize(float fontSizePx) {
