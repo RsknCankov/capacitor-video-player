@@ -40,11 +40,15 @@ public class CapacitorExoActivity extends Fragment {
     }
 
     public void pausePlayer() {
-        videoPlayerView.playerPause();
+        if (videoPlayerView != null) {
+            videoPlayerView.playerPause();
+        }
     }
 
     public void selectSubtitleStream(String language) {
-        videoPlayerView.selectSubtitleStream(language);
+        if (videoPlayerView != null) {
+            videoPlayerView.selectSubtitleStream(language);
+        }
     }
 
     public void setSubtitleFontSize(float fontSizePx) {
@@ -54,7 +58,10 @@ public class CapacitorExoActivity extends Fragment {
     }
 
     public long getCurrentPlayerTime() {
-        return videoPlayerView.getCurrentTime();
+        if (videoPlayerView != null) {
+            return videoPlayerView.getCurrentTime();
+        }
+        return 0;
     }
 
     public void seekForward() {
@@ -88,15 +95,24 @@ public class CapacitorExoActivity extends Fragment {
     }
 
     public long getDuration() {
-        return videoPlayerView.getDuration();
+        if (videoPlayerView != null) {
+            return videoPlayerView.getDuration();
+        }
+        return 0;
     }
 
     public long getBuffered() {
-        return videoPlayerView.getBuffered();
+        if (videoPlayerView != null) {
+            return videoPlayerView.getBuffered();
+        }
+        return 0;
     }
 
     public long[] getBufferedRanges() {
-        return videoPlayerView.getBufferedRanges();
+        if (videoPlayerView != null) {
+            return videoPlayerView.getBufferedRanges();
+        }
+        return new long[0];
     }
 
     public void setRect(int x, int y, int width, int height) {

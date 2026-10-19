@@ -50,7 +50,9 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     @PluginMethod
     public void playerPlay(PluginCall call) {
         bridge.getActivity().runOnUiThread(() -> {
-            exoActivity.play();
+            if (exoActivity != null) {
+                exoActivity.play();
+            }
             call.resolve();
         });
     }
@@ -58,7 +60,9 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     @PluginMethod
     public void playerPause(PluginCall call) {
         bridge.getActivity().runOnUiThread(() -> {
-            exoActivity.pausePlayer();
+            if (exoActivity != null) {
+                exoActivity.pausePlayer();
+            }
             call.resolve();
         });
 
