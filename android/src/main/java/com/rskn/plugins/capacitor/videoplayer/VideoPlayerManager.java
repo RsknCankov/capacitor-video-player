@@ -30,6 +30,8 @@ import androidx.media3.exoplayer.hls.playlist.HlsMultivariantPlaylist;
 import androidx.media3.exoplayer.hls.playlist.HlsPlaylistParser;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.extractor.DefaultExtractorsFactory;
+import androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory;
 import androidx.media3.ui.PlayerView;
 
 import java.io.IOException;
@@ -386,7 +388,12 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
         // Use enhanced data source factory with retry configuration
         DataSource.Factory dataSourceFactory = createDataSourceFactory();
-        DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(dataSourceFactory);
+        // Some broadcast encoders never send IDR frames, only I-frames with a recovery point SEI.
+        // Without this flag the TS extractor waits forever for a keyframe and video never starts.
+        DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory()
+                .setTsExtractorFlags(DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES);
+        DefaultMediaSourceFactory mediaSourceFactory =
+                new DefaultMediaSourceFactory(dataSourceFactory, extractorsFactory);
         MediaItem mediaItem = MediaItem.fromUri(url);
 
         Log.d(TAG, "Preparing " + streamType + " stream: " + url);
