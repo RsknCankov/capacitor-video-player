@@ -7,6 +7,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -22,9 +25,9 @@ import androidx.media3.datasource.DefaultDataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.datasource.ResolvingDataSource;
 import androidx.media3.exoplayer.DefaultLoadControl;
-import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.SeekParameters;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
 import androidx.media3.exoplayer.hls.playlist.HlsMediaPlaylist;
 import androidx.media3.exoplayer.hls.playlist.HlsMultivariantPlaylist;
 import androidx.media3.exoplayer.hls.playlist.HlsPlaylistParser;
@@ -67,6 +70,23 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
     private static final String STREAM_SESSION_PARAM = "stream_session";
     private volatile String streamSession;
     private volatile String streamSessionHost;
+
+    // Software video decoders (libgav1, libvpx) draw into the surface from the CPU, and Android
+    // keeps that connection for the life of the surface. A MediaCodec decoder can't connect to it
+    // afterwards ("already connected"), so the next stream needs a fresh surface.
+    private boolean surfaceUsedBySoftwareDecoder;
+    private final AnalyticsListener softwareDecoderTracker = new AnalyticsListener() {
+        @Override
+        public void onVideoDecoderInitialized(
+                @NonNull EventTime eventTime,
+                @NonNull String decoderName,
+                long initializedTimestampMs,
+                long initializationDurationMs) {
+            if (decoderName.startsWith("libgav1") || decoderName.startsWith("libvpx")) {
+                surfaceUsedBySoftwareDecoder = true;
+            }
+        }
+    };
 
     VideoPlayerManager(Context context, PlayerView playerView, LifecycleOwner lifecycleOwner) {
         lifecycleOwner.getLifecycle().addObserver(this);
@@ -228,8 +248,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
         exoPlayer = new ExoPlayer.Builder(context)
                 .setRenderersFactory(
-                        new DefaultRenderersFactory(context)
-                                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+                        new ExtensionRenderersFactory(context)
                                 .setEnableDecoderFallback(true)
                 )
                 .setLoadControl(loadControl)
@@ -253,6 +272,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         exoPlayer.setSeekParameters(SeekParameters.EXACT);
 
         exoPlayer.addAnalyticsListener(new ExoPlayerAnalyticsListener());
+        exoPlayer.addAnalyticsListener(softwareDecoderTracker);
 
         playerView.setUseController(false);
         playerView.setShutterBackgroundColor(Color.TRANSPARENT);
@@ -386,12 +406,19 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         exoPlayer.clearMediaItems();
         exoPlayer.seekTo(0);
 
+        if (surfaceUsedBySoftwareDecoder) {
+            recreateVideoSurface();
+        }
+
         // Use enhanced data source factory with retry configuration
         DataSource.Factory dataSourceFactory = createDataSourceFactory();
         // Some broadcast encoders never send IDR frames, only I-frames with a recovery point SEI.
         // Without this flag the TS extractor waits forever for a keyframe and video never starts.
+        // DTS with stream type 0x82 (HDMV) is dropped unless enabled; Media3 can't read the SCTE
+        // subtitles that share that stream type anyway.
         DefaultExtractorsFactory extractorsFactory = new DefaultExtractorsFactory()
-                .setTsExtractorFlags(DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES);
+                .setTsExtractorFlags(DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
+                        | DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS);
         DefaultMediaSourceFactory mediaSourceFactory =
                 new DefaultMediaSourceFactory(dataSourceFactory, extractorsFactory);
         MediaItem mediaItem = MediaItem.fromUri(url);
@@ -409,6 +436,22 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         Log.d(TAG, "ExoPlayer prepared with " + streamType + " configuration");
     }
 
+    // Detaching the SurfaceView releases its surface right away, and attaching it again creates a
+    // new one, which PlayerView hands to the player through its SurfaceHolder callback.
+    private void recreateVideoSurface() {
+        surfaceUsedBySoftwareDecoder = false;
+        View surfaceView = playerView.getVideoSurfaceView();
+        if (!(surfaceView instanceof SurfaceView) || !(surfaceView.getParent() instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup parent = (ViewGroup) surfaceView.getParent();
+        int index = parent.indexOfChild(surfaceView);
+        ViewGroup.LayoutParams layoutParams = surfaceView.getLayoutParams();
+        parent.removeViewAt(index);
+        parent.addView(surfaceView, index, layoutParams);
+        Log.d(TAG, "Recreated video surface after software video decoder");
+    }
+
     // Initialize player with stream-specific configuration
     private void initializePlayerForStream(Context context, PlayerView playerView, String url) {
         boolean isTimeshift = isTimeshiftStream(url);
@@ -420,8 +463,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
 
         exoPlayer = new ExoPlayer.Builder(context)
                 .setRenderersFactory(
-                        new DefaultRenderersFactory(context)
-                                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+                        new ExtensionRenderersFactory(context)
                                 .setEnableDecoderFallback(true)
                 )
                 .setLoadControl(loadControl)
@@ -444,6 +486,7 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         exoPlayer.setSeekParameters(SeekParameters.EXACT);
 
         exoPlayer.addAnalyticsListener(new ExoPlayerAnalyticsListener());
+        exoPlayer.addAnalyticsListener(softwareDecoderTracker);
 
         playerView.setUseController(false);
         playerView.setShutterBackgroundColor(Color.TRANSPARENT);

@@ -118,11 +118,12 @@ public final class FfmpegLibrary {
     switch (mimeType) {
       case MimeTypes.AUDIO_AAC:
         return "aac";
+      // Upstream maps all three to "mp3". Map each layer to its own decoder so playback does not
+      // depend on which mpegaudio decoders the bundled libffmpegJNI was built with.
       case MimeTypes.AUDIO_MPEG:
         return "mp3";
-      // Upstream maps L1/L2 to "mp3", but the bundled libffmpegJNI is built without the mp3
-      // decoder. FFmpeg's mp2 decoder reads the layer from each frame header, so it handles L1 too.
       case MimeTypes.AUDIO_MPEG_L1:
+        return "mp1";
       case MimeTypes.AUDIO_MPEG_L2:
         return "mp2";
       case MimeTypes.AUDIO_AC3:
