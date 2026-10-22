@@ -19,12 +19,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Plugs in the bundled decoder extensions (FFmpeg audio, libvpx VP9, libgav1 AV1).
+ * Plugs in the bundled FFmpeg audio decoder extension.
  *
  * <p>Audio formats FFmpeg can decode go to FFmpeg, so formats the TV cannot decode (MP2, DTS, ...)
  * still play. AAC, AC-3 and E-AC-3 stay on the device's own decoder (or passthrough to an AV
- * receiver), with FFmpeg as the fallback. Video extensions are software decoders, so they only
- * come after the hardware decoders and are used when the device has no decoder for the format.
+ * receiver), with FFmpeg as the fallback.
  */
 @UnstableApi
 final class ExtensionRenderersFactory extends DefaultRenderersFactory {
