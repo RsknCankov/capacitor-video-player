@@ -3,8 +3,6 @@ package com.rskn.plugins.capacitor.videoplayer;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -40,7 +38,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 @UnstableApi
@@ -52,10 +49,6 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
     private final PlayerView playerView;
     private Timer timer;
     private TimerTask timerTask;
-
-    // Add an AtomicBoolean to manage the lock
-    private final AtomicBoolean isPlayerReleased = new AtomicBoolean(false);
-    private final Handler releaseHandler = new Handler(Looper.getMainLooper());
 
     // Stream authorization token taken from the URL we are asked to play. HLS playlists
     // reference their variants and segments with relative URIs, so only the top-level
@@ -529,65 +522,21 @@ class VideoPlayerManager implements DefaultLifecycleObserver {
         owner.getLifecycle().removeObserver(this);
     }
 
+    // ExoPlayer may only be used on the thread that created it (the main thread); from any other
+    // thread stop()/release() throw "Player is accessed on the wrong thread" and the player keeps
+    // playing in the background. release() waits at most ~500 ms for the playback thread.
     private void releasePlayer() {
-        // Check and set the lock to ensure releasePlayer is called only once
-        if (isPlayerReleased.compareAndSet(false, true)) {
-            if (exoPlayer != null) {
-                final ExoPlayer playerToRelease = exoPlayer;
-                exoPlayer = null;  // Immediately null out the reference
-
-                // Post release to background thread with error handling
-                new Thread(() -> {
-                    try {
-                        Log.d(TAG, "Starting player release on background thread...");
-
-                        // Stop first (quick operation)
-                        try {
-                            playerToRelease.stop();
-                            Log.d(TAG, "Player stopped successfully");
-                        } catch (Exception e) {
-                            Log.w(TAG, "Error stopping player (continuing with release)", e);
-                        }
-
-                        // Release with timeout monitoring
-                        final long startTime = System.currentTimeMillis();
-                        final AtomicBoolean releaseCompleted = new AtomicBoolean(false);
-
-                        // Start release operation
-                        Thread releaseThread = new Thread(() -> {
-                            try {
-                                playerToRelease.release();
-                                releaseCompleted.set(true);
-                                Log.d(TAG, "Player released successfully in " + (System.currentTimeMillis() - startTime) + "ms");
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error during player release", e);
-                            }
-                        });
-                        releaseThread.start();
-
-                        // Wait max 5 seconds for release to complete
-                        try {
-                            releaseThread.join(5000);
-                        } catch (InterruptedException e) {
-                            Log.w(TAG, "Release thread interrupted", e);
-                        }
-
-                        if (!releaseCompleted.get()) {
-                            Log.w(TAG, "Player release timed out after 5s, but continuing anyway");
-                            // Don't throw error to Sentry - this is expected on slow devices
-                        }
-
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unexpected error in releasePlayer", e);
-                    } finally {
-                        // Reset lock for next initialization
-                        releaseHandler.post(() -> {
-                            isPlayerReleased.set(false);
-                            Log.d(TAG, "Release lock reset, player can be re-initialized");
-                        });
-                    }
-                }).start();
-            }
+        if (exoPlayer == null) {
+            return;
+        }
+        ExoPlayer playerToRelease = exoPlayer;
+        exoPlayer = null;
+        try {
+            playerToRelease.stop();
+            playerToRelease.release();
+            Log.d(TAG, "Player released");
+        } catch (Exception e) {
+            Log.e(TAG, "Error releasing player", e);
         }
     }
 }
